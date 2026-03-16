@@ -129,6 +129,60 @@ const FontStyle = () => (
       border-radius: 10px;
     }
 
+    /* Mobile Responsive Styles */
+    @media (max-width: 1024px) {
+      .templates-main-container {
+        flex-direction: column !important;
+        height: auto !important;
+        gap: 16px !important;
+        padding: 12px !important;
+      }
+
+      .templates-left-panel {
+        flex: 1 !important;
+        max-width: 100% !important;
+      }
+
+      .templates-scroll-container {
+        max-height: 60vh !important;
+      }
+
+      .templates-right-panel {
+        display: none !important;
+      }
+
+      .tmpl-card {
+        border-radius: 12px !important;
+      }
+
+      .thumbnail-wrapper {
+        height: 200px !important;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .templates-scroll-container {
+        max-height: 50vh !important;
+        padding-right: 4px !important;
+      }
+
+      .thumbnail-wrapper {
+        height: 180px !important;
+      }
+
+      .section-label {
+        font-size: 9px !important;
+      }
+
+      h1 {
+        font-size: 20px !important;
+      }
+
+      p {
+        font-size: 12px !important;
+      }
+    }
+
     /* Thumbnail Wrapper - ensures proper scaling */
     .thumbnail-wrapper {
       position: relative;
@@ -1974,10 +2028,24 @@ const Templates = ({ formData = {}, skills = [], selectedTemplate = 0, setSelect
       )}
 
       {/* Main Container - Split Layout */}
-      <div style={{ display: 'flex', gap: 24, padding: '20px', maxWidth: '1800px', margin: '0 auto', height: 'calc(100vh - 80px)', overflow: 'hidden' }}>
+      <div className="templates-main-container" style={{ 
+        display: 'flex', 
+        flexDirection: 'row',
+        gap: 24, 
+        padding: '20px', 
+        maxWidth: '1800px', 
+        margin: '0 auto', 
+        height: 'calc(100vh - 80px)', 
+        overflow: 'hidden' 
+      }}>
         
         {/* LEFT SIDE - Template Grid (2 columns) */}
-        <div style={{ flex: '0 0 580px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div className="templates-left-panel" style={{ 
+          flex: '0 0 580px', 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: 16 
+        }}>
           <div>
             <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 12px", borderRadius: 999, background: dk ? 'rgba(255,255,255,0.05)' : "white", border: `1.5px solid ${dk ? '#334155' : 'var(--accent-light)'}`, marginBottom: 10 }}>
               <span style={{ width: 7, height: 7, borderRadius: "50%", background: "linear-gradient(135deg,var(--gradient-from),var(--gradient-to))", display: "inline-block" }} />
@@ -2147,9 +2215,9 @@ const Templates = ({ formData = {}, skills = [], selectedTemplate = 0, setSelect
         </div>
 
         {/* RIGHT SIDE - Live Preview */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div className="templates-right-panel" style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 16 }}>
           {/* Preview Header */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 14px", borderRadius: 999, background: dk ? 'rgba(255,255,255,0.05)' : "white", border: `1.5px solid ${dk ? '#334155' : 'var(--accent-light)'}`, boxShadow: `0 2px 8px ${dk ? 'rgba(0,0,0,0.2)' : 'rgba(99,102,241,0.08)'}` }}>
               <div style={{ width: 7, height: 7, borderRadius: "50%", background: "linear-gradient(135deg,var(--gradient-from),var(--gradient-to))" }} />
               <span className="section-label" style={{ color: "var(--accent)", fontSize: 11 }}>
@@ -2158,7 +2226,7 @@ const Templates = ({ formData = {}, skills = [], selectedTemplate = 0, setSelect
             </div>
 
             {/* Action Buttons */}
-            <div style={{ display: 'flex', gap: 10 }}>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
               <button
                 onClick={handleEdit}
                 style={{
@@ -2169,6 +2237,7 @@ const Templates = ({ formData = {}, skills = [], selectedTemplate = 0, setSelect
                   cursor: 'pointer',
                   display: 'flex', alignItems: 'center', gap: 8,
                   transition: 'all 0.2s ease',
+                  minHeight: '44px',
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-1px)';
@@ -2183,7 +2252,8 @@ const Templates = ({ formData = {}, skills = [], selectedTemplate = 0, setSelect
                   <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                   <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                 </svg>
-                Edit Resume
+                <span className="hidden sm:inline">Edit Resume</span>
+                <span className="sm:hidden">Edit</span>
               </button>
 
               <button
@@ -2195,10 +2265,11 @@ const Templates = ({ formData = {}, skills = [], selectedTemplate = 0, setSelect
                   color: "#fff", letterSpacing: 0.3,
                   display: "flex", alignItems: "center", gap: 8,
                   boxShadow: "0 6px 24px rgba(37,99,235,0.35)",
+                  minHeight: '44px',
                 }}
               >
                 {downloading ? (
-                  <><span className="spinner" />Generating...</>
+                  <><span className="spinner" /><span className="hidden sm:inline">Generating...</span><span className="sm:hidden">...</span></>
                 ) : (
                   <>
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -2206,7 +2277,8 @@ const Templates = ({ formData = {}, skills = [], selectedTemplate = 0, setSelect
                       <polyline points="7 10 12 15 17 10" />
                       <line x1="12" y1="15" x2="12" y2="3" />
                     </svg>
-                    Download PDF
+                    <span className="hidden sm:inline">Download PDF</span>
+                    <span className="sm:hidden">PDF</span>
                   </>
                 )}
               </button>

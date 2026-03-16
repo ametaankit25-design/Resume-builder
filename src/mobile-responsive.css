@@ -1,0 +1,146 @@
+/* Mobile Responsive Styles for Resume Builder */
+
+/* Base responsive breakpoints */
+@media (max-width: 640px) {
+  /* Ensure theme changes work on mobile */
+  html, body, #root {
+    transition: background-color 0.3s ease, color 0.3s ease !important;
+  }
+
+  html {
+    background-color: white !important;
+  }
+
+  html.dark {
+    background-color: #0f172a !important;
+  }
+
+  body {
+    background-color: white !important;
+    color: #111827 !important;
+  }
+
+  html.dark body {
+    background-color: #0f172a !important;
+    color: #f1f5f9 !important;
+  }
+
+  #root {
+    min-height: 100vh;
+    background-color: white !important;
+  }
+
+  html.dark #root {
+    background-color: #0f172a !important;
+  }
+
+  /* Fix navbar z-index and positioning */
+  nav, .navbar {
+    position: relative !important;
+    z-index: 100 !important;
+  }
+
+  /* Prevent horizontal scroll */
+  body {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+  }
+
+  /* Fix template page layout on mobile */
+  .templates-container {
+    flex-direction: column !important;
+    height: auto !important;
+  }
+
+  .templates-scroll-container {
+    max-height: 60vh !important;
+    overflow-y: auto !important;
+  }
+
+  /* Make template cards responsive */
+  .tmpl-card {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Fix preview on mobile */
+  .preview-frame {
+    transform: scale(0.5) !important;
+    transform-origin: top center !important;
+    width: 200% !important;
+  }
+
+  /* Ensure buttons are touchable */
+  button, .btn, .cta-btn {
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+
+  /* Fix form inputs on mobile */
+  input, textarea, select {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+  }
+
+  /* Fix modal/dropdown positioning */
+  .dropdown, .modal {
+    position: fixed !important;
+    max-width: 90vw !important;
+  }
+}
+
+/* Tablet responsive */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .templates-container {
+    gap: 20px !important;
+  }
+
+  .preview-frame {
+    transform: scale(0.7) !important;
+  }
+}
+
+/* Fix touch targets for mobile */
+@media (hover: none) and (pointer: coarse) {
+  button, a, .clickable {
+    min-height: 44px !important;
+    min-width: 44px !important;
+    padding: 12px !important;
+  }
+}
+
+/* Landscape mobile fix */
+@media (max-width: 896px) and (orientation: landscape) {
+  .hero {
+    min-height: 100vh !important;
+  }
+
+  .templates-scroll-container {
+    max-height: 50vh !important;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 375px) {
+  html {
+    font-size: 14px !important;
+  }
+
+  h1 {
+    font-size: 1.75rem !important;
+  }
+
+  h2 {
+    font-size: 1.5rem !important;
+  }
+}
+
+/* Fix for iOS Safari */
+@supports (-webkit-touch-callout: none) {
+  body {
+    min-height: -webkit-fill-available !important;
+  }
+
+  #root {
+    min-height: -webkit-fill-available !important;
+  }
+}

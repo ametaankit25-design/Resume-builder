@@ -55,14 +55,16 @@ const Navbar = () => {
   return (
     <div className="py-3 px-4 sm:py-4 sm:px-6 flex items-center transition-colors duration-300"
       style={{
-        position:'relative', zIndex:10,
+        position:'sticky',
+        top: 0,
+        zIndex:100,
         background: darkMode ? '#1e293b' : 'var(--primary-light)',
         color: darkMode ? '#e2e8f0' : 'var(--primary)',
       }}>
 
       {/* Logo */}
       <h1
-        className="font-bold capitalize text-xl sm:text-2xl md:text-3xl cursor-pointer select-none"
+        className="font-bold capitalize text-lg sm:text-xl md:text-2xl lg:text-3xl cursor-pointer select-none"
         style={{ fontFamily: 'Poppins', color: darkMode ? '#f1f5f9' : 'var(--primary)' }}
         onClick={() => navigate("/")}
       >
@@ -291,12 +293,14 @@ const Navbar = () => {
             fontFamily: 'Poppins',
             background: darkMode ? 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)' : 'linear-gradient(180deg, var(--primary-light) 0%, var(--primary-bg) 100%)',
             borderColor: darkMode ? '#334155' : 'var(--primary-mid)',
+            maxHeight: '80vh',
+            overflowY: 'auto',
           }}>
           <div className="flex flex-col px-4 py-3 gap-1">
             {!user && (
               <button
                 className="w-full text-left px-4 py-3 text-base font-bold bg-transparent border-0 cursor-pointer rounded-xl transition-colors"
-                style={{ color: darkMode ? '#e2e8f0' : 'var(--primary)' }}
+                style={{ color: darkMode ? '#e2e8f0' : 'var(--primary)', minHeight: '48px' }}
                 onClick={() => { navigate("/loginPage"); setMobileOpen(false); }}
               >
                 Login / Signup
@@ -317,16 +321,17 @@ const Navbar = () => {
                   </div>
                 </div>
                 <button className="w-full text-left px-4 py-3 text-sm font-medium bg-transparent border-0 cursor-pointer rounded-xl transition-colors"
-                  style={{ color: darkMode ? '#cbd5e1' : '#475569' }}
+                  style={{ color: darkMode ? '#cbd5e1' : '#475569', minHeight: '48px' }}
                   onClick={() => { navigate('/dashboard'); setMobileOpen(false); }}>
                   📄 My Resumes
                 </button>
                 <button className="w-full text-left px-4 py-3 text-sm font-medium bg-transparent border-0 cursor-pointer rounded-xl transition-colors"
-                  style={{ color: darkMode ? '#cbd5e1' : '#475569' }}
+                  style={{ color: darkMode ? '#cbd5e1' : '#475569', minHeight: '48px' }}
                   onClick={() => { navigate('/settings'); setMobileOpen(false); }}>
                   ⚙️ Settings
                 </button>
                 <button className="w-full text-left px-4 py-3 text-sm font-semibold bg-transparent border-0 cursor-pointer rounded-xl transition-colors text-red-600"
+                  style={{ minHeight: '48px' }}
                   onClick={handleLogout}>
                   🚪 Sign Out
                 </button>
