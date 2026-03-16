@@ -52,15 +52,45 @@
     height: auto !important;
   }
 
+  .templates-main-container {
+    flex-direction: column !important;
+    height: auto !important;
+    padding: 8px !important;
+  }
+
+  .templates-left-panel {
+    flex: 1 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
   .templates-scroll-container {
     max-height: 60vh !important;
     overflow-y: auto !important;
+    width: 100% !important;
+  }
+
+  /* Single column grid on mobile */
+  .templates-scroll-container > div {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
   }
 
   /* Make template cards responsive */
   .tmpl-card {
     width: 100% !important;
     max-width: 100% !important;
+  }
+
+  /* Fix thumbnail scaling on mobile */
+  .thumbnail-wrapper {
+    height: 160px !important;
+    width: 100% !important;
+  }
+
+  .thumbnail-inner {
+    transform: scale(0.28) !important;
+    transform-origin: top center !important;
   }
 
   /* Fix preview on mobile */

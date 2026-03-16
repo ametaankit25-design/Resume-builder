@@ -161,13 +161,22 @@ const FontStyle = () => (
     }
 
     @media (max-width: 640px) {
+      .templates-main-container {
+        padding: 8px !important;
+        gap: 12px !important;
+      }
+
       .templates-scroll-container {
         max-height: 50vh !important;
         padding-right: 4px !important;
       }
 
       .thumbnail-wrapper {
-        height: 180px !important;
+        height: 160px !important;
+      }
+
+      .thumbnail-inner {
+        transform: scale(0.28) !important;
       }
 
       .section-label {
@@ -175,11 +184,24 @@ const FontStyle = () => (
       }
 
       h1 {
-        font-size: 20px !important;
+        font-size: 18px !important;
       }
 
       p {
-        font-size: 12px !important;
+        font-size: 11px !important;
+      }
+
+      /* Single column grid on mobile */
+      .templates-scroll-container > div {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+      }
+    }
+
+    /* Landscape mobile fix */
+    @media (max-width: 896px) and (orientation: landscape) {
+      .templates-scroll-container {
+        max-height: 40vh !important;
       }
     }
 

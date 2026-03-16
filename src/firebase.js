@@ -13,8 +13,29 @@ const firebaseConfig = {
     measurementId: "G-2RM2LDN6PT"
 };
 
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const googleProvider = new GoogleAuthProvider();
-export const db = getFirestore(app);
+// Initialize Firebase with error handling
+let app;
+let auth;
+let googleProvider;
+let db;
 
+try {
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    googleProvider = new GoogleAuthProvider();
+    
+    // Configure Google Provider
+    googleProvider.setCustomParameters({
+        prompt: 'select_account'
+    });
+    
+    db = getFirestore(app);
+    
+    console.log('Firebase initialized successfully');
+} catch (error) {
+    console.error('Firebase initialization error:', error);
+    // Provide fallback or user-friendly error message
+    throw new Error('Failed to initialize Firebase. Please check your internet connection and try again.');
+}
+
+export { auth, googleProvider, db };

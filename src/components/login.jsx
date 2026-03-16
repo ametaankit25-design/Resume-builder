@@ -185,6 +185,7 @@ const Field = ({ label, icon, type='text', placeholder, value, onChange, error, 
 );
 
 const formatError = (msg='') => {
+    if (!msg) return 'An unexpected error occurred. Please try again.';
     if (msg.includes('email-already-in-use'))  return 'This email is already registered.';
     if (msg.includes('wrong-password'))         return 'Incorrect password. Please try again.';
     if (msg.includes('user-not-found'))         return 'No account found with this email.';
@@ -193,6 +194,10 @@ const formatError = (msg='') => {
     if (msg.includes('too-many-requests'))      return 'Too many attempts. Please wait a moment.';
     if (msg.includes('popup-closed-by-user'))   return 'Google sign-in was cancelled.';
     if (msg.includes('invalid-credential'))     return 'Incorrect email or password.';
+    if (msg.includes('network-request-failed')) return 'Network error. Please check your internet connection.';
+    if (msg.includes('auth/configuration-not-found')) return 'Authentication configuration error. Please contact support.';
+    if (msg.includes('auth/internal-error'))    return 'Internal error. Please try again later.';
+    if (msg.includes('auth/invalid-api-key'))   return 'Invalid API key. Please contact support.';
     return 'Something went wrong. Please try again.';
 };
 
@@ -232,14 +237,22 @@ const LoginSignup = () => {
         e.preventDefault(); if (!validate()) return;
         setLoading(true); setApiErr('');
         try {
-            if (tab==='login') { await signInWithEmailAndPassword(auth, form.email, form.password); onSuccess(); }
+            if (tab==='login') { 
+                await signInWithEmailAndPassword(auth, form.email, form.password); 
+                onSuccess(); 
+            }
             else {
                 const { user } = await createUserWithEmailAndPassword(auth, form.email, form.password);
                 await updateProfile(user, { displayName: form.name });
                 emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, { to_name:form.name, to_email:form.email }, EMAILJS_PUBLIC_KEY).catch(console.warn);
                 onSuccess();
             }
-        } catch(err) { setApiErr(formatError(err.message)); } finally { setLoading(false); }
+        } catch(err) { 
+            console.error('Auth error:', err);
+            setApiErr(formatError(err.message || err.code || String(err))); 
+        } finally { 
+            setLoading(false); 
+        }
     };
 
     const handleGoogle = async () => {
@@ -249,7 +262,12 @@ const LoginSignup = () => {
             if (result._tokenResponse?.isNewUser)
                 emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, { to_name:result.user.displayName||'there', to_email:result.user.email }, EMAILJS_PUBLIC_KEY).catch(console.warn);
             onSuccess();
-        } catch(err) { setApiErr(formatError(err.message)); } finally { setGLoading(false); }
+        } catch(err) { 
+            console.error('Google auth error:', err);
+            setApiErr(formatError(err.message || err.code || String(err))); 
+        } finally { 
+            setGLoading(false); 
+        }
     };
 
     const switchTab = (t) => { setTab(t); setErrors({}); setApiErr(''); setDone(false); setForm({name:'',email:'',password:'',confirm:''}); };
