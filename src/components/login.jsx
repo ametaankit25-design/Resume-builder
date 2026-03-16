@@ -9,12 +9,13 @@ import {
 } from 'firebase/auth';
 import emailjs from 'emailjs-com';
 import { auth, googleProvider } from '../firebase';
+import { useTheme } from '../ThemeContext';
 
 const EMAILJS_SERVICE_ID  = "service_xkajwad";
 const EMAILJS_TEMPLATE_ID = "template_lgaf479";
 const EMAILJS_PUBLIC_KEY  = "barenH6VgMtFo51tb";
 
-const Styles = () => (
+const Styles = ({ dk }) => (
     <style>{`
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap');
 
@@ -32,61 +33,62 @@ const Styles = () => (
     @keyframes pulse    { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
     @keyframes float-icon{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
 
-    .ls-card {
-      animation: fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) both;
-    }
+    .ls-card { animation: fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) both; }
 
     .ls-input {
-      width:100%; padding:13px 16px 13px 44px;
-      border:1.5px solid #e0e7ff; border-radius:12px;
-      font-size:14px; font-family:'DM Sans',sans-serif;
-      color:#1e293b; background:#fafbff; outline:none;
+      width:100%; padding:11px 14px 11px 40px;
+      border:1.5px solid ${dk?'#475569':'#e0e7ff'}; border-radius:10px;
+      font-size:13px; font-family:'DM Sans',sans-serif;
+      color:${dk?'#e2e8f0':'#1e293b'}; background:${dk?'#0f172a':'#fafbff'}; outline:none;
       transition:all 0.2s ease;
     }
+    @media (min-width: 640px) {
+      .ls-input { padding:13px 16px 13px 44px; border-radius:12px; font-size:14px; }
+    }
     .ls-input:focus {
-      border-color:#6366f1;
-      background:#fff;
-      box-shadow:0 0 0 4px rgba(99,102,241,0.12);
+      border-color:var(--accent);
+      background:${dk?'#1e293b':'#fff'};
+      box-shadow:0 0 0 4px ${dk?'rgba(99,102,241,0.15)':'rgba(99,102,241,0.12)'};
     }
     .ls-input.err { border-color:#f87171; box-shadow:0 0 0 3px rgba(248,113,113,0.15); }
-    .ls-input::placeholder { color:#cbd5e1; }
+    .ls-input::placeholder { color:${dk?'#475569':'#cbd5e1'}; }
 
     .ls-label {
       display:block; font-size:11.5px; font-weight:700;
-      color:#6366f1; margin-bottom:7px;
+      color:var(--accent); margin-bottom:7px;
       letter-spacing:0.7px; text-transform:uppercase;
       font-family:'DM Sans',sans-serif;
     }
 
     .ls-btn-primary {
-      width:100%; padding:14px;
-      background:linear-gradient(135deg,#2563eb,#7c3aed);
+      width:100%; padding:12px;
+      background:linear-gradient(135deg,var(--gradient-from),var(--gradient-to));
       background-size:200% 200%;
-      color:#fff; border:none; border-radius:12px;
-      font-size:15px; font-weight:700;
+      color:#fff; border:none; border-radius:10px;
+      font-size:14px; font-weight:700;
       font-family:'DM Sans',sans-serif; cursor:pointer;
       box-shadow:0 6px 24px rgba(37,99,235,0.35);
       transition:all 0.25s ease;
       display:flex; align-items:center; justify-content:center; gap:9px;
       animation: gradShift 4s ease infinite;
     }
-    .ls-btn-primary:hover:not(:disabled) {
-      transform:translateY(-2px);
-      box-shadow:0 10px 32px rgba(37,99,235,0.45);
-    }
+    @media (min-width: 640px) { .ls-btn-primary { padding:14px; border-radius:12px; font-size:15px; } }
+    .ls-btn-primary:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 10px 32px rgba(37,99,235,0.45); }
     .ls-btn-primary:disabled { opacity:0.7; cursor:not-allowed; }
 
     .ls-btn-google {
-      width:100%; padding:13px; background:#fff; color:#334155;
-      border:1.5px solid #e0e7ff; border-radius:12px;
-      font-size:14px; font-weight:600; font-family:'DM Sans',sans-serif;
-      cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.05);
+      width:100%; padding:11px; color:${dk?'#e2e8f0':'#334155'};
+      background:${dk?'#0f172a':'#fff'};
+      border:1.5px solid ${dk?'#475569':'#e0e7ff'}; border-radius:10px;
+      font-size:13px; font-weight:600; font-family:'DM Sans',sans-serif;
+      cursor:pointer; box-shadow:0 2px 8px ${dk?'rgba(0,0,0,0.2)':'rgba(0,0,0,0.05)'};
       transition:all 0.2s ease;
       display:flex; align-items:center; justify-content:center; gap:9px;
     }
+    @media (min-width: 640px) { .ls-btn-google { padding:13px; border-radius:12px; font-size:14px; } }
     .ls-btn-google:hover:not(:disabled) {
-      border-color:#a5b4fc;
-      box-shadow:0 4px 16px rgba(99,102,241,0.15);
+      border-color:var(--accent-border);
+      box-shadow:0 4px 16px ${dk?'rgba(99,102,241,0.2)':'rgba(99,102,241,0.15)'};
       transform:translateY(-1px);
     }
     .ls-btn-google:disabled { opacity:0.7; cursor:not-allowed; }
@@ -94,59 +96,58 @@ const Styles = () => (
     .tab-pill {
       flex:1; padding:10px 0; border:none; border-radius:10px;
       font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600;
-      cursor:pointer; transition:all 0.25s; color:#64748b; background:transparent;
+      cursor:pointer; transition:all 0.25s;
+      color:${dk?'#94a3b8':'#64748b'}; background:transparent;
     }
     .tab-pill.active {
-      background:linear-gradient(135deg,#2563eb,#7c3aed);
+      background:linear-gradient(135deg,var(--gradient-from),var(--gradient-to));
       color:#fff;
       box-shadow:0 4px 14px rgba(37,99,235,0.35);
     }
-    .tab-pill:not(.active):hover { background:#eef2ff; color:#4f46e5; }
+    .tab-pill:not(.active):hover { background:${dk?'rgba(255,255,255,0.05)':'#eef2ff'}; color:var(--accent); }
 
     .spinner { width:17px; height:17px; border:2.5px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.7s linear infinite; flex-shrink:0; }
-    .spinner-indigo { width:15px; height:15px; border:2.5px solid rgba(99,102,241,0.2); border-top-color:#6366f1; border-radius:50%; animation:spin 0.7s linear infinite; flex-shrink:0; }
+    .spinner-indigo { width:15px; height:15px; border:2.5px solid rgba(99,102,241,0.2); border-top-color:var(--accent); border-radius:50%; animation:spin 0.7s linear infinite; flex-shrink:0; }
 
     .check-icon { animation:checkPop 0.4s cubic-bezier(0.22,1,0.36,1) both; }
-    .ripple-ring { position:absolute; inset:-5px; border-radius:50%; border:2.5px solid #6366f1; animation:ripple 1.3s ease-out infinite; }
+    .ripple-ring { position:absolute; inset:-5px; border-radius:50%; border:2.5px solid var(--accent); animation:ripple 1.3s ease-out infinite; }
 
-    .pw-toggle { position:absolute; right:13px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:#94a3b8; display:flex; align-items:center; transition:color 0.15s; padding:0; }
-    .pw-toggle:hover { color:#6366f1; }
+    .pw-toggle { position:absolute; right:13px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:${dk?'#64748b':'#94a3b8'}; display:flex; align-items:center; transition:color 0.15s; padding:0; }
+    .pw-toggle:hover { color:var(--accent); }
 
     .back-btn {
-      position:fixed; top:20px; left:20px; z-index:50;
-      display:flex; align-items:center; gap:6px;
-      background:white; border:1.5px solid #e0e7ff; border-radius:12px;
-      padding:8px 16px; font-size:13.5px; font-weight:600; color:#6366f1;
-      cursor:pointer; box-shadow:0 2px 12px rgba(99,102,241,0.10);
+      position:fixed; top:12px; left:12px; z-index:50;
+      display:flex; align-items:center; gap:4px;
+      background:${dk?'#1e293b':'white'}; border:1.5px solid ${dk?'#475569':'#e0e7ff'}; border-radius:10px;
+      padding:6px 12px; font-size:12px; font-weight:600; color:var(--accent);
+      cursor:pointer; box-shadow:0 2px 12px ${dk?'rgba(0,0,0,0.3)':'rgba(99,102,241,0.10)'};
       transition:all 0.2s; font-family:'DM Sans',sans-serif;
     }
-    .back-btn:hover { background:#eef2ff; border-color:#a5b4fc; transform:translateY(-1px); }
+    @media (min-width: 640px) { .back-btn { top:20px; left:20px; gap:6px; border-radius:12px; padding:8px 16px; font-size:13.5px; } }
+    .back-btn:hover { background:${dk?'#334155':'#eef2ff'}; border-color:var(--accent-border); transform:translateY(-1px); }
 
     .feature-pill {
       display:inline-flex; align-items:center; gap:5px;
-      font-size:12px; font-weight:600; color:#6366f1;
+      font-size:12px; font-weight:600; color:var(--accent);
       padding:4px 12px; border-radius:999px;
-      background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.15);
+      background:${dk?'rgba(99,102,241,0.08)':'rgba(99,102,241,0.08)'}; border:1px solid ${dk?'rgba(99,102,241,0.2)':'rgba(99,102,241,0.15)'};
     }
 
-    .loader-bg {
-      background:linear-gradient(135deg,#eff6ff,#eef2ff);
-    }
+    .loader-bg { background:${dk?'#0f172a':'linear-gradient(135deg,var(--primary-bg),var(--accent-light))'}; }
     .loader-icon { animation:float-icon 2s ease-in-out infinite; }
     .loader-pulse { animation:pulse 1.5s ease-in-out infinite; }
-    .loader-ring { width:52px; height:52px; border:4px solid #dbeafe; border-top-color:#6366f1; border-radius:50%; animation:spin 0.8s linear infinite; }
+    .loader-ring { width:52px; height:52px; border:4px solid ${dk?'#334155':'var(--primary-light)'}; border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite; }
   `}</style>
 );
 
-const Blobs = () => (
+const Blobs = ({ dk }) => (
     <div style={{ position:'fixed', inset:0, overflow:'hidden', pointerEvents:'none', zIndex:0 }}>
-        <div style={{ position:'absolute', top:'-8%', left:'-6%', width:380, height:380, borderRadius:'50%', background:'radial-gradient(circle,rgba(37,99,235,0.09) 0%,transparent 70%)', animation:'float1 8s ease-in-out infinite' }}/>
-        <div style={{ position:'absolute', bottom:'-6%', right:'-5%', width:440, height:440, borderRadius:'50%', background:'radial-gradient(circle,rgba(124,58,237,0.08) 0%,transparent 70%)', animation:'float2 10s ease-in-out infinite' }}/>
-        <div style={{ position:'absolute', top:'35%', right:'5%', width:180, height:180, borderRadius:'50%', background:'radial-gradient(circle,rgba(99,102,241,0.07) 0%,transparent 70%)', animation:'float1 7s ease-in-out 1s infinite' }}/>
-        <div style={{ position:'absolute', inset:0, backgroundImage:'linear-gradient(rgba(99,102,241,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,0.03) 1px,transparent 1px)', backgroundSize:'44px 44px' }}/>
-        {/* Spinning rings */}
-        <div style={{ position:'absolute', top:'10%', right:'10%', width:70, height:70, borderRadius:'50%', border:'2px dashed rgba(99,102,241,0.15)', animation:'spin-slow 18s linear infinite' }}/>
-        <div style={{ position:'absolute', bottom:'15%', left:'8%', width:45, height:45, borderRadius:'50%', border:'2px dashed rgba(37,99,235,0.12)', animation:'spin-slow 12s linear reverse infinite' }}/>
+        <div style={{ position:'absolute', top:'-8%', left:'-6%', width:380, height:380, borderRadius:'50%', background:`radial-gradient(circle,${dk?'rgba(37,99,235,0.04)':'rgba(37,99,235,0.09)'} 0%,transparent 70%)`, animation:'float1 8s ease-in-out infinite' }}/>
+        <div style={{ position:'absolute', bottom:'-6%', right:'-5%', width:440, height:440, borderRadius:'50%', background:`radial-gradient(circle,${dk?'rgba(124,58,237,0.04)':'rgba(124,58,237,0.08)'} 0%,transparent 70%)`, animation:'float2 10s ease-in-out infinite' }}/>
+        <div style={{ position:'absolute', top:'35%', right:'5%', width:180, height:180, borderRadius:'50%', background:`radial-gradient(circle,${dk?'rgba(99,102,241,0.03)':'rgba(99,102,241,0.07)'} 0%,transparent 70%)`, animation:'float1 7s ease-in-out 1s infinite' }}/>
+        <div style={{ position:'absolute', inset:0, backgroundImage:`linear-gradient(rgba(99,102,241,${dk?'0.015':'0.03'}) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,${dk?'0.015':'0.03'}) 1px,transparent 1px)`, backgroundSize:'44px 44px' }}/>
+        <div style={{ position:'absolute', top:'10%', right:'10%', width:70, height:70, borderRadius:'50%', border:`2px dashed ${dk?'rgba(99,102,241,0.08)':'rgba(99,102,241,0.15)'}`, animation:'spin-slow 18s linear infinite' }}/>
+        <div style={{ position:'absolute', bottom:'15%', left:'8%', width:45, height:45, borderRadius:'50%', border:`2px dashed ${dk?'rgba(37,99,235,0.06)':'rgba(37,99,235,0.12)'}`, animation:'spin-slow 12s linear reverse infinite' }}/>
     </div>
 );
 
@@ -197,6 +198,8 @@ const formatError = (msg='') => {
 
 const LoginSignup = () => {
     const navigate = useNavigate();
+    const { darkMode } = useTheme();
+    const dk = darkMode;
     const [tab,      setTab]      = useState('login');
     const [loading,  setLoading]  = useState(false);
     const [gLoading, setGLoading] = useState(false);
@@ -254,27 +257,30 @@ const LoginSignup = () => {
     if (loading || gLoading) return (
         <div className="fixed inset-0 flex flex-col items-center justify-center z-50 loader-bg"
             style={{ fontFamily:"'DM Sans',sans-serif" }}>
-            <Styles/>
+            <Styles dk={dk}/>
             <div className="loader-icon mb-5 w-16 h-16 rounded-2xl flex items-center justify-center"
-                style={{ background:'linear-gradient(135deg,#2563eb,#7c3aed)', boxShadow:'0 8px 32px rgba(37,99,235,0.35)' }}>
+                style={{ background:`linear-gradient(135deg,var(--gradient-from),var(--gradient-to))`, boxShadow:'0 8px 32px rgba(37,99,235,0.35)' }}>
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                     <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
                 </svg>
             </div>
             <div className="loader-ring mb-4"/>
-            <p className="loader-pulse font-bold text-sm tracking-widest uppercase" style={{ color:'#6366f1' }}>
+            <p className="loader-pulse font-bold text-sm tracking-widest uppercase" style={{ color:'var(--accent)' }}>
                 {gLoading ? 'Connecting with Google...' : tab==='login' ? 'Signing you in...' : 'Creating your account...'}
             </p>
         </div>
     );
 
     return (
-        <div className="min-h-screen" style={{ fontFamily:"'DM Sans',sans-serif", background:'linear-gradient(135deg,#f0f7ff 0%,#eef2ff 50%,#f5f3ff 100%)', position:'relative' }}>
-            <Styles/>
-            <Blobs/>
+        <div className="min-h-screen transition-colors duration-300" style={{
+            fontFamily:"'DM Sans',sans-serif",
+            background: dk ? '#0f172a' : 'linear-gradient(135deg,#f0f7ff 0%,#eef2ff 50%,#f5f3ff 100%)',
+            position:'relative',
+        }}>
+            <Styles dk={dk}/>
+            <Blobs dk={dk}/>
 
-            {/* Back button */}
             <button className="back-btn" onClick={() => navigate(-1)}>
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="15 18 9 12 15 6"/>
@@ -282,41 +288,39 @@ const LoginSignup = () => {
                 Back
             </button>
 
-            <div style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'100vh', padding:'28px 16px', position:'relative', zIndex:1 }}>
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'100vh', padding:'16px 12px', position:'relative', zIndex:1 }}>
 
-                <div className="ls-card" style={{ width:'100%', maxWidth:440, borderRadius:24, overflow:'hidden', boxShadow:'0 20px 70px rgba(99,102,241,0.15), 0 4px 12px rgba(0,0,0,0.06)' }}>
+                <div className="ls-card" style={{
+                    width:'100%', maxWidth:440, borderRadius:20, overflow:'hidden',
+                    boxShadow: dk ? '0 12px 50px rgba(0,0,0,0.4)' : '0 12px 50px rgba(99,102,241,0.15), 0 4px 12px rgba(0,0,0,0.06)',
+                }}>
 
-                    {/* Top gradient bar */}
-                    <div style={{ height:5, background:'linear-gradient(90deg,#1d4ed8,#6366f1,#7c3aed,#6366f1,#1d4ed8)', backgroundSize:'200% 100%', animation:'gradShift 4s ease infinite' }}/>
+                    <div style={{ height:5, background:`linear-gradient(90deg,var(--primary-dark),var(--accent),var(--gradient-to),var(--accent),var(--primary-dark))`, backgroundSize:'200% 100%', animation:'gradShift 4s ease infinite' }}/>
 
-                    {/* Card body */}
-                    <div style={{ background:'white', padding:'36px 40px 40px' }}>
+                    <div style={{ background: dk ? '#1e293b' : 'white', padding:'24px 20px 28px' }} className="sm:!p-[36px_40px_40px]">
 
-                        {/* Header */}
                         <div style={{ textAlign:'center', marginBottom:28 }}>
-                            <div style={{ display:'inline-flex', alignItems:'center', justifyContent:'center', width:56, height:56, borderRadius:16, background:'linear-gradient(135deg,#2563eb,#7c3aed)', marginBottom:14, boxShadow:'0 6px 20px rgba(99,102,241,0.40)' }}>
+                            <div style={{ display:'inline-flex', alignItems:'center', justifyContent:'center', width:56, height:56, borderRadius:16, background:`linear-gradient(135deg,var(--gradient-from),var(--gradient-to))`, marginBottom:14, boxShadow:'0 6px 20px rgba(99,102,241,0.40)' }}>
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                                     <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
                                 </svg>
                             </div>
-                            <h2 style={{ fontFamily:"'Poppins',sans-serif", fontSize:22, fontWeight:700, color:'#0f172a', marginBottom:6, letterSpacing:-0.3 }}>
+                            <h2 style={{ fontFamily:"'Poppins',sans-serif", fontWeight:700, color: dk ? '#f1f5f9' : '#0f172a', marginBottom:6, letterSpacing:-0.3 }} className="text-lg sm:text-[22px]">
                                 MyResume.io
                             </h2>
-                            <p style={{ fontSize:13.5, color:'#64748b' }}>
+                            <p style={{ fontSize:13.5, color: dk ? '#94a3b8' : '#64748b' }}>
                                 {tab==='login' ? 'Welcome back! Sign in to continue.' : 'Create your free account today.'}
                             </p>
                         </div>
 
-                        {/* Feature pills */}
                         <div style={{ display:'flex', justifyContent:'center', gap:8, flexWrap:'wrap', marginBottom:24 }}>
                             {['✓ Free', '✓ Instant PDF', '✓ Pro Templates'].map((f,i) => (
                                 <span key={i} className="feature-pill">{f}</span>
                             ))}
                         </div>
 
-                        {/* Tabs */}
-                        <div style={{ display:'flex', gap:4, background:'#f1f5f9', borderRadius:13, padding:4, marginBottom:26 }}>
+                        <div style={{ display:'flex', gap:4, background: dk ? '#0f172a' : '#f1f5f9', borderRadius:13, padding:4, marginBottom:26 }}>
                             <button className={`tab-pill${tab==='login'?' active':''}`} onClick={()=>switchTab('login')}>Sign In</button>
                             <button className={`tab-pill${tab==='signup'?' active':''}`} onClick={()=>switchTab('signup')}>Create Account</button>
                         </div>
@@ -324,28 +328,28 @@ const LoginSignup = () => {
                         {done ? (
                             <div style={{ textAlign:'center', padding:'32px 0' }}>
                                 <div style={{ position:'relative', width:72, height:72, margin:'0 auto 20px' }}>
-                                    <div style={{ width:72, height:72, borderRadius:'50%', background:'linear-gradient(135deg,#eff6ff,#eef2ff)', display:'flex', alignItems:'center', justifyContent:'center', border:'2px solid #e0e7ff' }}>
-                                        <svg className="check-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                    <div style={{ width:72, height:72, borderRadius:'50%', background: dk ? 'rgba(99,102,241,0.1)' : 'linear-gradient(135deg,var(--primary-bg),var(--accent-light))', display:'flex', alignItems:'center', justifyContent:'center', border:`2px solid ${dk ? '#475569' : 'var(--accent-light)'}` }}>
+                                        <svg className="check-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                                             <polyline points="20 6 9 17 4 12"/>
                                         </svg>
                                     </div>
                                     <div className="ripple-ring"/>
                                 </div>
-                                <p style={{ fontSize:18, fontWeight:800, color:'#0f172a', marginBottom:8, fontFamily:"'Poppins',sans-serif" }}>
+                                <p style={{ fontSize:18, fontWeight:800, color: dk ? '#f1f5f9' : '#0f172a', marginBottom:8, fontFamily:"'Poppins',sans-serif" }}>
                                     {tab==='login' ? 'Welcome back! 👋' : 'Account created! 🎉'}
                                 </p>
-                                <p style={{ fontSize:13.5, color:'#64748b' }}>
+                                <p style={{ fontSize:13.5, color: dk ? '#94a3b8' : '#64748b' }}>
                                     {tab==='signup' ? '✉️ Check your inbox! Redirecting…' : 'Redirecting you now…'}
                                 </p>
                             </div>
                         ) : (
                             <form onSubmit={handleSubmit} noValidate>
                                 {apiErr && (
-                                    <div style={{ display:'flex', alignItems:'flex-start', gap:10, background:'#fef2f2', border:'1.5px solid #fca5a5', borderRadius:10, padding:'11px 14px', marginBottom:18 }}>
+                                    <div style={{ display:'flex', alignItems:'flex-start', gap:10, background: dk ? 'rgba(239,68,68,0.1)' : '#fef2f2', border:`1.5px solid ${dk ? 'rgba(248,113,113,0.3)' : '#fca5a5'}`, borderRadius:10, padding:'11px 14px', marginBottom:18 }}>
                                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round" style={{ flexShrink:0, marginTop:1 }}>
                                             <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
                                         </svg>
-                                        <span style={{ fontSize:13, color:'#b91c1c' }}>{apiErr}</span>
+                                        <span style={{ fontSize:13, color:'#ef4444' }}>{apiErr}</span>
                                     </div>
                                 )}
 
@@ -357,15 +361,15 @@ const LoginSignup = () => {
 
                                 {tab==='login' && (
                                     <div style={{ textAlign:'right', marginTop:-8, marginBottom:20 }}>
-                                        <span style={{ fontSize:12.5, cursor:'pointer', fontWeight:600, color:'#6366f1' }}>Forgot password?</span>
+                                        <span style={{ fontSize:12.5, cursor:'pointer', fontWeight:600, color:'var(--accent)' }}>Forgot password?</span>
                                     </div>
                                 )}
 
                                 {tab==='signup' && (
                                     <div style={{ display:'flex', alignItems:'flex-start', gap:10, marginBottom:20, marginTop:4 }}>
-                                        <input type="checkbox" id="terms" required style={{ marginTop:3, accentColor:'#6366f1', width:15, height:15, flexShrink:0, cursor:'pointer' }}/>
-                                        <label htmlFor="terms" style={{ fontSize:12.5, color:'#64748b', lineHeight:1.6, cursor:'pointer' }}>
-                                            I agree to the <span style={{ fontWeight:700, color:'#6366f1', cursor:'pointer' }}>Terms of Service</span> and <span style={{ fontWeight:700, color:'#6366f1', cursor:'pointer' }}>Privacy Policy</span>
+                                        <input type="checkbox" id="terms" required style={{ marginTop:3, accentColor:'var(--accent)', width:15, height:15, flexShrink:0, cursor:'pointer' }}/>
+                                        <label htmlFor="terms" style={{ fontSize:12.5, color: dk ? '#94a3b8' : '#64748b', lineHeight:1.6, cursor:'pointer' }}>
+                                            I agree to the <span style={{ fontWeight:700, color:'var(--accent)', cursor:'pointer' }}>Terms of Service</span> and <span style={{ fontWeight:700, color:'var(--accent)', cursor:'pointer' }}>Privacy Policy</span>
                                         </label>
                                     </div>
                                 )}
@@ -375,9 +379,9 @@ const LoginSignup = () => {
                                 </button>
 
                                 <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:14 }}>
-                                    <div style={{ flex:1, height:1, background:'#e0e7ff' }}/>
+                                    <div style={{ flex:1, height:1, background: dk ? '#334155' : '#e0e7ff' }}/>
                                     <span style={{ fontSize:12.5, color:'#94a3b8', fontWeight:500, whiteSpace:'nowrap' }}>or continue with</span>
-                                    <div style={{ flex:1, height:1, background:'#e0e7ff' }}/>
+                                    <div style={{ flex:1, height:1, background: dk ? '#334155' : '#e0e7ff' }}/>
                                 </div>
 
                                 <button type="button" className="ls-btn-google" onClick={handleGoogle}>
@@ -387,9 +391,9 @@ const LoginSignup = () => {
                         )}
 
                         {!done && (
-                            <p style={{ textAlign:'center', marginTop:24, fontSize:13.5, color:'#64748b' }}>
+                            <p style={{ textAlign:'center', marginTop:24, fontSize:13.5, color: dk ? '#94a3b8' : '#64748b' }}>
                                 {tab==='login' ? "Don't have an account? " : 'Already have an account? '}
-                                <span style={{ fontWeight:700, cursor:'pointer', color:'#6366f1' }}
+                                <span style={{ fontWeight:700, cursor:'pointer', color:'var(--accent)' }}
                                     onClick={()=>switchTab(tab==='login'?'signup':'login')}>
                                     {tab==='login' ? 'Sign up free →' : '← Sign in'}
                                 </span>
@@ -397,12 +401,11 @@ const LoginSignup = () => {
                         )}
                     </div>
 
-                    {/* Footer */}
-                    <div style={{ background:'linear-gradient(135deg,#f5f3ff,#eff6ff)', borderTop:'1px solid #e0e7ff', padding:'12px 20px', display:'flex', alignItems:'center', justifyContent:'center', gap:7 }}>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" strokeWidth="2.5" strokeLinecap="round">
+                    <div style={{ background: dk ? '#0f172a' : 'linear-gradient(135deg,#f5f3ff,var(--primary-bg))', borderTop:`1px solid ${dk ? '#334155' : 'var(--accent-light)'}`, padding:'12px 20px', display:'flex', alignItems:'center', justifyContent:'center', gap:7 }}>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={dk ? '#475569' : '#a5b4fc'} strokeWidth="2.5" strokeLinecap="round">
                             <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                         </svg>
-                        <span style={{ fontSize:12, color:'#94a3b8', fontWeight:500 }}>Secured by Firebase Authentication</span>
+                        <span style={{ fontSize:12, color: dk ? '#475569' : '#94a3b8', fontWeight:500 }}>Secured by Firebase Authentication</span>
                     </div>
                 </div>
             </div>

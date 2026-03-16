@@ -5,6 +5,7 @@ import FormPage from './pages/formPage'
 import Final from './pages/FinalPage'
 import Temp from './pages/templates'
 import LoginSignup from './pages/loginPage';
+import Dashboard from './pages/dashboard';
 const App = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors duration-300">
@@ -14,6 +15,7 @@ const App = () => {
           <Route path="/FinalPage" element={<Final />} />
           <Route path="/templates" element={<Temp />} />
           <Route path="/loginPage" element={<LoginSignup />} />
+          <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
     </div>
   )
