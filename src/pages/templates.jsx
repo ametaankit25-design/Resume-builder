@@ -158,6 +158,11 @@ const FontStyle = () => (
       .thumbnail-wrapper {
         height: 200px !important;
       }
+
+      /* Show mobile action buttons */
+      .mobile-action-buttons {
+        display: flex !important;
+      }
     }
 
     @media (max-width: 640px) {
@@ -196,12 +201,51 @@ const FontStyle = () => (
         grid-template-columns: 1fr !important;
         gap: 12px !important;
       }
+
+      /* Mobile action buttons */
+      .mobile-action-buttons {
+        position: fixed !important;
+        bottom: 16px !important;
+        left: 16px !important;
+        right: 16px !important;
+        z-index: 50 !important;
+        display: flex !important;
+        gap: 10px !important;
+        padding: 0 !important;
+      }
+
+      .mobile-action-buttons button {
+        flex: 1 !important;
+        min-height: 48px !important;
+        font-size: 14px !important;
+        font-weight: 700 !important;
+        border-radius: 12px !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.2) !important;
+      }
+
+      /* Add padding to templates container for fixed buttons */
+      .templates-scroll-container {
+        padding-bottom: 80px !important;
+      }
+    }
+
+    /* Desktop - hide mobile buttons */
+    @media (min-width: 1025px) {
+      .mobile-action-buttons {
+        display: none !important;
+      }
     }
 
     /* Landscape mobile fix */
     @media (max-width: 896px) and (orientation: landscape) {
       .templates-scroll-container {
         max-height: 40vh !important;
+      }
+
+      .mobile-action-buttons {
+        bottom: 8px !important;
+        left: 8px !important;
+        right: 8px !important;
       }
     }
 
@@ -2331,6 +2375,52 @@ const Templates = ({ formData = {}, skills = [], selectedTemplate = 0, setSelect
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Mobile Action Buttons - Fixed at bottom */}
+        <div className="mobile-action-buttons" style={{ display: 'none' }}>
+          <button
+            onClick={handleEdit}
+            style={{
+              background: dk ? '#1e293b' : 'white',
+              color: dk ? '#e2e8f0' : '#334155',
+              border: `2px solid ${dk ? '#334155' : 'var(--accent-light)'}`,
+              cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              fontFamily: "'DM Sans', sans-serif",
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+            Edit
+          </button>
+
+          <button
+            className="dl-btn"
+            onClick={handleDownloadPDF}
+            disabled={downloading}
+            style={{
+              cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              fontFamily: "'DM Sans', sans-serif",
+              border: 'none',
+            }}
+          >
+            {downloading ? (
+              <><span className="spinner" />Generating...</>
+            ) : (
+              <>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                Download PDF
+              </>
+            )}
+          </button>
         </div>
       </div>
     </div>
